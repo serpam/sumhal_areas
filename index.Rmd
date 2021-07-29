@@ -46,7 +46,7 @@ popup_montes <- paste0(
 
 popup_fires <- paste0(
   "<strong>Campaña:</strong> ", fires$CAMPANA,
-  "<strong>Fecha:</strong> ", lubridate::ymd(fires$FECHA_Inic),
+  "<br><strong>Fecha:</strong> ", lubridate::ymd(fires$FECHA_Inic),
   "<br><strong>Superficie (ha.):</strong> ", round(as.numeric(fires$SHAPE_Area), 2)
 )
 ```
@@ -77,22 +77,10 @@ map_base <- leaflet() %>%
     attribution = '<a href="http://www.juntadeandalucia.es/institutodeestadisticaycartografia" target="_blank">Instituto de Estadística y Cartografía de Andalucía</a>',
     group = "topo2013"
   ) %>%
-  addWMSTiles("http://www.ideandalucia.es/wms/mta10v_2007?",
-    layers = "mta10v_2007",
-    options = WMSTileOptions(format = "image/png", transparent = FALSE),
-    attribution = '<a href="http://www.juntadeandalucia.es/institutodeestadisticaycartografia" target="_blank">Instituto de Estadística y Cartografía de Andalucía</a>',
-    group = "topo2007"
-  ) %>%
-  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
-  addWMSTiles("http://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_MUCV25_99_escala_detalle?",
-    layers = "mta10v_2007",
-    options = WMSTileOptions(format = "image/png", transparent = FALSE),
-    attribution = '<a href="http://www.juntadeandalucia.es/institutodeestadisticaycartografia" target="_blank">Instituto de Estadística y Cartografía de Andalucía</a>',
-    group = "topo2007"
-  ) %>% # Layers control
+  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>% # Layers control
   addLayersControl(
     position = "bottomright",
-    baseGroups = c("Satellite", "Basemap", "Hillshade", "Topographical", "topo2013", "topo2007"),
+    baseGroups = c("Satellite", "Basemap", "Hillshade", "Topographical", "topo2013"),
     overlayGroups = c("Montes Públicos", "Incendios"),
     options = layersControlOptions(collapsed = TRUE)
   )
@@ -131,7 +119,7 @@ map_base_enriquecido <-
       style = list("color" = "black")
     )
   )
-  
+
 ```
 
 
