@@ -19,16 +19,16 @@ library("tidyverse")
 
 ```{r}
 # Area of Interest 
-aoi_sni <- st_read("data/aoi/aoi_sni.shp") 
+aoi_sni <- st_read("data/aoi/aoi_sni.shp", quiet = TRUE) 
 aoi_sni <- st_transform(aoi_sni, crs = 4326)
 
 # Montes 
-montes <- st_read("data/geo_pesadas/MonteCatalogo.shp")
+montes <- st_read("data/geo_pesadas/MonteCatalogo.shp", quiet = TRUE)
 montes <- st_transform(montes, crs = 4326)
 # convert url to html anchor tag 
 
 # Incendios 
-fires <- st_read("data/geo_pesadas/incendios_historico.shp")
+fires <- st_read("data/geo_pesadas/incendios_historico.shp", quiet = TRUE)
 fires <- st_transform(fires, crs=4326)
 ```
 
