@@ -15,6 +15,9 @@ library('rgdal')
 library("leaflet") 
 library("sf")
 library("tidyverse")
+library("raster")
+library("sp")
+library("lubridate")
 ```
 
 ```{r}
@@ -34,14 +37,20 @@ fires <- st_transform(fires, crs=4326)
 
 
 ```{r optionsMap}
-popup_montes <- paste0("<strong>Nombre:</strong> ", montes$NOMBRE,
-                   "<br><strong>Código:</strong> ", montes$CODIGO_JA,
-                    "<br><strong>Superficie (ha.):</strong> ", round(as.numeric(montes$SUP_HA),2),
-                   paste0('<br><a href=', montes$ACCESO_INF, ' target="_blank"><strong>Mas info</strong></a>'))
+popup_montes <- paste0(
+  "<strong>Nombre:</strong> ", montes$NOMBRE,
+  "<br><strong>Código:</strong> ", montes$CODIGO_JA,
+  "<br><strong>Superficie (ha.):</strong> ", round(as.numeric(montes$SUP_HA), 2),
+  paste0("<br><a href=", montes$ACCESO_INF, ' target="_blank"><strong>Mas info</strong></a>')
+)
+
+popup_fires <- paste0(
+  "<strong>Campaña:</strong> ", fires$CAMPANA,
+  "<strong>Fecha:</strong> ", lubridate::ymd(fires$FECHA_Inic),
+  "<br><strong>Superficie (ha.):</strong> ", round(as.numeric(fires$SHAPE_Area), 2)
+)
 ```
 
-Mapa
-=============================================================================
 
 ```{r baseMap}
 map_base <- leaflet() %>%
@@ -84,19 +93,21 @@ map_base <- leaflet() %>%
   addLayersControl(
     position = "bottomright",
     baseGroups = c("Satellite", "Basemap", "Hillshade", "Topographical", "topo2013", "topo2007"),
-    overlayGroups = c("Montes Públicos"),
+    overlayGroups = c("Montes Públicos", "Incendios"),
     options = layersControlOptions(collapsed = TRUE)
   )
 
 ```
 
-```{r}
-map_base %>%
+
+```{r EnrichMap}
+map_base_enriquecido <- 
+  map_base %>% 
   addPolygons(
     data = montes,
     group = "Montes Públicos",
     fillColor = "red", fillOpacity = 0.4,
-    stroke = TRUE, color= "red", weight = 1, 
+    stroke = TRUE, color= "red", weight = 1,
     popup = popup_montes,
     label = ~CODIGO_JA,
     labelOptions = labelOptions(
@@ -105,8 +116,35 @@ map_base %>%
       textOnly = F,
       style = list("color" = "black")
     )
+  ) %>% 
+  addPolygons(
+    data = fires,
+    group = "Incendios",
+    fillColor = "orange", fillOpacity = 0.4,
+    stroke = TRUE, color= "orange", weight = 1,
+    popup = popup_fires,
+    label = ~CAMPANA,
+    labelOptions = labelOptions(
+      noHide = FALSE,
+      offset = c(0, 0),
+      textOnly = F,
+      style = list("color" = "black")
+    )
   )
+  
+```
 
+
+
+Sierra de las Nieves (SNI)
+=============================================================================
+
+```{r}
+# Set spatial extension 
+myext <- st_bbox(aoi_sni) %>% as.vector()
+
+map_base_enriquecido %>%
+  fitBounds(myext[1], myext[2], myext[3], myext[4])
 ```
 
 
