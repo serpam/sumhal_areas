@@ -1,0 +1,120 @@
+---
+title: "Study Areas SUMHAL"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    theme: yeti
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+library('flexdashboard')
+library('rgdal')
+library("leaflet") 
+library("sf")
+library("tidyverse")
+```
+
+```{r}
+# Area of Interest 
+aoi_sni <- st_read("data/aoi/aoi_sni.shp") 
+aoi_sni <- st_transform(aoi_sni, crs = 4326)
+
+# Montes 
+montes <- st_read("data/geo_pesadas/MonteCatalogo.shp")
+montes <- st_transform(montes, crs = 4326)
+# convert url to html anchor tag 
+
+# Incendios 
+fires <- st_read("data/geo_pesadas/incendios_historico.shp")
+fires <- st_transform(fires, crs=4326)
+```
+
+
+```{r optionsMap}
+popup_montes <- paste0("<strong>Nombre:</strong> ", montes$NOMBRE,
+                   "<br><strong>Código:</strong> ", montes$CODIGO_JA,
+                    "<br><strong>Superficie (ha.):</strong> ", round(as.numeric(montes$SUP_HA),2),
+                   paste0('<br><a href=', montes$ACCESO_INF, ' target="_blank"><strong>Mas info</strong></a>'))
+```
+
+Mapa
+=============================================================================
+
+```{r baseMap}
+map_base <- leaflet() %>%
+  addWMSTiles("http://www.ideandalucia.es/wms/mdt_2005?",
+    layers = "Sombreado_10",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE),
+    attribution = '<a href="http://www.juntadeandalucia.es/institutodeestadisticaycartografia" target="_blank">Instituto de Estadística y Cartografía de Andalucía</a>',
+    group = "Hillshade"
+  ) %>%
+  addTiles(
+    urlTemplate = "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+    attribution = '<a href="https://carto.com/attributions">CARTO</a>',
+    group = "Basemap"
+  ) %>%
+  addWMSTiles("http://www.ideandalucia.es/services/toporaster10/wms?",
+    layers = "toporaster10",
+    options = WMSTileOptions(format = "image/png", transparent = FALSE),
+    attribution = '<a href="http://www.juntadeandalucia.es/institutodeestadisticaycartografia" target="_blank">Instituto de Estadística y Cartografía de Andalucía</a>',
+    group = "Topographical"
+  ) %>%
+  addWMSTiles("http://www.ideandalucia.es/wms/mta10r_2001-2013?",
+    layers = "mta10r_2001-2013",
+    options = WMSTileOptions(format = "image/png", transparent = FALSE),
+    attribution = '<a href="http://www.juntadeandalucia.es/institutodeestadisticaycartografia" target="_blank">Instituto de Estadística y Cartografía de Andalucía</a>',
+    group = "topo2013"
+  ) %>%
+  addWMSTiles("http://www.ideandalucia.es/wms/mta10v_2007?",
+    layers = "mta10v_2007",
+    options = WMSTileOptions(format = "image/png", transparent = FALSE),
+    attribution = '<a href="http://www.juntadeandalucia.es/institutodeestadisticaycartografia" target="_blank">Instituto de Estadística y Cartografía de Andalucía</a>',
+    group = "topo2007"
+  ) %>%
+  addProviderTiles("Esri.WorldImagery", group = "Satellite") %>%
+  addWMSTiles("http://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_MUCV25_99_escala_detalle?",
+    layers = "mta10v_2007",
+    options = WMSTileOptions(format = "image/png", transparent = FALSE),
+    attribution = '<a href="http://www.juntadeandalucia.es/institutodeestadisticaycartografia" target="_blank">Instituto de Estadística y Cartografía de Andalucía</a>',
+    group = "topo2007"
+  ) %>% # Layers control
+  addLayersControl(
+    position = "bottomright",
+    baseGroups = c("Satellite", "Basemap", "Hillshade", "Topographical", "topo2013", "topo2007"),
+    overlayGroups = c("Montes Públicos"),
+    options = layersControlOptions(collapsed = TRUE)
+  )
+
+```
+
+```{r}
+map_base %>%
+  addPolygons(
+    data = montes,
+    group = "Montes Públicos",
+    fillColor = "red", fillOpacity = 0.4,
+    stroke = TRUE, color= "red", weight = 1, 
+    popup = popup_montes,
+    label = ~CODIGO_JA,
+    labelOptions = labelOptions(
+      noHide = FALSE,
+      offset = c(0, 0),
+      textOnly = F,
+      style = list("color" = "black")
+    )
+  )
+
+```
+
+
+
+Info
+=============================================================================
+
+dkkkkkkkk
+
+
+
