@@ -129,7 +129,7 @@ Sierra de las Nieves (SNI)
 ```{r vege}
 # Vegetation
 veg_sni <- st_read("data/geo_pesadas/veg10/veg10_sni.shp", 
-                   options = "ENCODING=UTF-8")
+                   options = "ENCODING=UTF-8", quiet = TRUE)
 
 veg <- st_transform(veg_sni, crs = 4326) %>% 
   dplyr::select(COM1, D_COM1, D_COM1_COB, D_CO1_ETAP,
@@ -189,7 +189,7 @@ popup_veg <- paste0(
 
 ```{r lotes}
 # Lotes
-lotes <- st_read("data/lotes/lotes_sni.shp")
+lotes <- st_read("data/lotes/lotes_sni.shp", quiet = TRUE)
 lotes <- st_transform(lotes, crs = 4326)
 
 popup_lotes <- paste0(
