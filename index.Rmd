@@ -94,73 +94,13 @@ map_base <- leaflet() %>%
 
 ```
 
-
-
-
-
-Sierra de las Nieves (SNI)
+Sierra de las Nieves (SNI) 
 =============================================================================
 
-```{r vege, eval=FALSE}
-# Vegetation
-veg_sni <- st_read("data/geo_pesadas/veg10/veg10_sni.shp", 
-                   options = "ENCODING=UTF-8", quiet = TRUE)
+Column {.tabset}
+--------------------------------------------------------------------
 
-veg <- st_transform(veg_sni, crs = 4326) %>% 
-  dplyr::select(COM1, D_COM1, D_COM1_COB, D_CO1_ETAP,
-                COM2, D_COM2, D_COM2_COB, D_CO2_ETAP,
-                COM3, D_COM3, D_COM3_COB, D_CO3_ETAP,
-                D_USO)
-
-
-urlRediam <- "https://laboratoriorediam.cica.es/recursosVisor/pdfs/aplicacionVegetacion/COMU/"
-
-tb <- ' target="_blank">'
-
-popup_veg <- paste0(
-  "<strong>Uso del Suelo:</strong> ", veg$D_USO,
-  "<br><strong>Comunidad Predominante 1:</strong> ", paste0("<br><em>", veg$D_COM1, "</em>"),
-  "<br>COD: ", paste0(
-    "<a href=",
-    paste0(urlRediam, veg$COM1, ".pdf"),
-    tb,
-    paste0(veg$COM1, "</a>")
-  ),
-  "<br>Cobertura: ", veg$D_COM1_COB,
-  "<br>Etapa sucecional:",
-  paste0("<br>", veg$D_CO1_ETAP),
-  # Comunidad pred. 2
-  "<br><strong>Comunidad Predominante 2:</strong> ",
-  ifelse(veg$D_COM2 == "-", "",
-    paste0("<br><em>", veg$D_COM2, "</em>")
-  ),
-  "<br>COD: ", ifelse(veg$COM2 == -1, "",
-    paste0(
-      "<a href=",
-      paste0(urlRediam, veg$COM2, ".pdf"),
-      tb,
-      paste0(veg$COM3, "</a>")
-    )
-  ),
-  "<br>Cobertura: ", ifelse(veg$D_COM2_COB == "Ausente", "", veg$D_COM2_COB),
-  # Comunidad pred. 3
-  "<br><strong>Comunidad Predominante 3:</strong> ",
-  ifelse(veg$D_COM3 == "-", "",
-    paste0("<br><em>", veg$D_COM3, "</em>")
-  ),
-  "<br>COD: ",
-  ifelse(veg$COM3 == -1, "",
-    paste0(
-      "<a href=",
-      paste0(urlRediam, veg$COM3, ".pdf"),
-      tb,
-      paste0(veg$COM3, "</a>")
-    )
-  ),
-  "<br>Cobertura: ", ifelse(veg$D_COM3_COB == "Ausente", "", veg$D_COM3_COB)
-)
-
-```
+### General View
 
 ```{r}
 # Area of Interest 
@@ -187,7 +127,7 @@ popup_lotes <- paste0(
 # Set spatial extension 
 myext <- st_bbox(aoi_sni) %>% as.vector()
 
-map_base %>%
+map_base_sni <- map_base %>%
   fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
   addPolygons(
     data = lotes,
@@ -208,8 +148,91 @@ map_base %>%
     baseGroups = c("Basemap", "PNOA Máxima Actualidad", "Satellite", "Hillshade", "Topographical", "topo2013"),
     overlayGroups = c("Lotes", "Montes Públicos", "Comunidades Vegetales"), 
     options = layersControlOptions(collapsed = TRUE)
-  )
+  ) 
 
+map_base_sni %>% 
+  hideGroup("Montes Públicos") %>% 
+  hideGroup("Comunidades Vegetales")
+```
+
+
+### SNI-1 (Juan Francisco Rio Lopez) 
+
+```{r}
+# Set spatial extension 
+lim <- lotes %>% filter(pastor == "Juan Francisco Rio Lopez")
+
+# Set spatial extension 
+myext <- st_bbox(lim) %>% as.vector()
+
+map_base_sni %>% 
+  fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
+  addPolygons(
+    data = lim,
+    group = "Lotes",
+    popup = popup_lotes,
+    fillColor = "transparent",
+    stroke = TRUE, color= "black", weight = 3)
+  
+```
+
+### SNI-2 (Jose Manuel Gomez Mora)
+
+```{r}
+lim <- lotes %>% filter(pastor == "Jose Manuel Gomez Mora")
+
+# Set spatial extension 
+myext <- st_bbox(lim) %>% as.vector()
+
+map_base_sni %>% 
+  fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
+  addPolygons(
+    data = lim,
+    group = "Lotes",
+    popup = popup_lotes,
+    fillColor = "transparent",
+    stroke = TRUE, color= "black", weight = 3)
+  
+```
+
+
+### SNI-3 (Gema Florido Florido)
+
+```{r}
+lim <- lotes %>% filter(pastor == "Gema Florido Florido")
+
+# Set spatial extension 
+myext <- st_bbox(lim) %>% as.vector()
+
+map_base_sni %>% 
+  fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
+  addPolygons(
+    data = lim,
+    group = "Lotes",
+    popup = popup_lotes,
+    fillColor = "transparent",
+    stroke = TRUE, color= "black", weight = 3)
+  
+```
+
+
+### SNI-4 (Pedro Vazquez Acevedo)
+
+```{r}
+lim <- lotes %>% filter(pastor == "Pedro Vazquez Acebedo")
+
+# Set spatial extension 
+myext <- st_bbox(lim) %>% as.vector()
+
+map_base_sni %>% 
+  fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
+  addPolygons(
+    data = lim,
+    group = "Lotes",
+    popup = popup_lotes,
+    fillColor = "transparent",
+    stroke = TRUE, color= "black", weight = 3)
+  
 ```
 
 
