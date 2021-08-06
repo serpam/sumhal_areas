@@ -81,6 +81,20 @@ map_base <- leaflet() %>%
         tiled = FALSE
       )
   ) %>%
+  leaflet.extras2::addWMS(
+    baseUrl = "https://www.juntadeandalucia.es/medioambiente/mapwms/REDIAM_historico_areas_recorridas_fuego?",
+    layers = "historico_incendios",
+    group = "Fires (1975-)",
+    popupOptions = popupOptions(maxWidth = 1000),
+    options =
+      leaflet::WMSTileOptions(
+        format = "image/png",
+        transparent = TRUE,
+        info_format = "text/html",
+        opacity = 0.5,
+        tiled = FALSE
+      )
+  ) %>% 
   addProviderTiles("Esri.WorldImagery", group = "Satellite") %>% 
   addWMSTiles("http://www.ign.es/wms-inspire/pnoa-ma",
     layers = "OI.OrthoimageCoverage",
@@ -123,6 +137,24 @@ popup_lotes <- paste0(
 ```
 
 
+```{r rapca_ma}
+rapca_ma <- st_read("data/rapca/Rapca_MALAGA 2020 provisional.shp", 
+                    quiet = TRUE) 
+rapca_ma <- st_transform(rapca_ma, crs = 4326)
+
+popup_rapca_ma <- paste0(
+  "<strong>Unidad:</strong> ", rapca_ma$UNIDAD,
+  "<br><strong>Código Unidad:</strong> ", rapca_ma$ID_UNIDAD,
+  "<br><strong>Longitud:</strong> ", paste0(round(rapca_ma$LONGITUD,0), " m"),
+  "<br><strong>Anchura:</strong> ", paste0(round(rapca_ma$ANCHURA,0), " m"),
+  "<br><strong>Superficie</strong> ", paste0(round(rapca_ma$LONGITUD,2), " ha"),
+  "<br><strong>Zona:</strong> ", paste0(rapca_ma$ZONA, " (", rapca_ma$ID_ZONA, ")")
+)
+
+```
+
+
+
 ```{r}
 # Set spatial extension 
 myext <- st_bbox(aoi_sni) %>% as.vector()
@@ -132,8 +164,8 @@ map_base_sni <- map_base %>%
   addPolygons(
     data = lotes,
     group = "Lotes",
-    fillColor = "brown", fillOpacity = 0.4,
-    stroke = TRUE, color= "brown", weight = 1,
+    fillColor = "#1c9099", fillOpacity = 0.4,
+    stroke = TRUE, color= "#1c9099", weight = 1,
     popup = popup_lotes,
     label = ~pastor,
     labelOptions = labelOptions(
@@ -143,16 +175,32 @@ map_base_sni <- map_base %>%
       style = list("color" = "black")
     )
   ) %>% 
+  addPolygons(
+    data = rapca_ma,
+    group = "RAPCA",
+    fillColor = "blue", fillOpacity = 0.6,
+    stroke = TRUE, color= "blue", weight = 1,
+    popup = popup_rapca_ma,
+    label = ~ID_UNIDAD,
+    labelOptions = labelOptions(
+      noHide = FALSE,
+      offset = c(0, 0),
+      textOnly = F,
+      style = list("color" = "black")
+    )
+  ) %>%
   addLayersControl(
     position = "bottomright",
     baseGroups = c("Basemap", "PNOA Máxima Actualidad", "Satellite", "Hillshade", "Topographical", "topo2013"),
-    overlayGroups = c("Lotes", "Montes Públicos", "Comunidades Vegetales"), 
+    overlayGroups = c("RAPCA", "Lotes", "Montes Públicos", "Comunidades Vegetales", "Fires (1975-)"), 
     options = layersControlOptions(collapsed = TRUE)
   ) 
 
 map_base_sni %>% 
   hideGroup("Montes Públicos") %>% 
-  hideGroup("Comunidades Vegetales")
+  hideGroup("Comunidades Vegetales") %>% 
+  hideGroup("RAPCA") %>% 
+  hideGroup("Fires (1975-)")
 ```
 
 
