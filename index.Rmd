@@ -295,6 +295,8 @@ Las capas de información utilizadas son:
 - [Mapa Base](https://www.ign.es/web/ign/portal/ide-area-nodo-ide-ign) IGN (WMS)
 - Catálogo de [Montes Públicos de Andalucía](https://laboratoriorediam.cica.es/geonetwork/srv/spa/catalog.search#/metadata/200b738b2a237099142a4bd263ceef957c8cdb07) (WMS)
 - [Comunidades Vegetales de Andalucía 1:10000](https://laboratoriorediam.cica.es/geonetwork/srv/spa/catalog.search#/metadata/08bfb47f8052ebfd936c20c5509b85c3fc73a91b) (WMS)
+- [Histórico de fuego (1975-Actualidad)](https://laboratoriorediam.cica.es/geonetwork/srv/spa/catalog.search#/metadata/0b9aa872-ad3d-4e30-941a-40a9968be6b0): áreas recorridas por el fuego obtenidas mediante Teledetección (WMS)
+- [Red de Áreas Pasto-Cortafuegos de Andalucía](https://www.juntadeandalucia.es/medioambiente/portal/landing-page-%C3%ADndice/-/asset_publisher/zX2ouZa4r1Rf/content/red-de-c3-a1reas-pasto-cortafuegos-de-andaluc-c3-ada-rapca-/20151?categoryVal=)
 
 
 
