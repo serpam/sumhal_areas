@@ -116,28 +116,22 @@ Column {.tabset}
 
 ### General View
 
-```{r}
+```{r prepare-data-sni}
 # Area of Interest 
 aoi_sni <- st_read("data/aoi/aoi_sni.shp", quiet = TRUE) 
 aoi_sni <- st_transform(aoi_sni, crs = 4326)
-```
 
-
-```{r lotes}
 # Lotes
-lotes <- st_read("data/lotes/lotes_sni.shp", quiet = TRUE)
-lotes <- st_transform(lotes, crs = 4326)
+lotes_sni <- st_read("data/lotes/lotes_sni.shp", quiet = TRUE)
+lotes_sni <- st_transform(lotes_sni, crs = 4326)
 
-popup_lotes <- paste0(
-  "<strong>Nombre Lote:</strong> ", lotes$lote_name,
-  "<br><strong>Zonas Rapca:</strong> ", lotes$zon_rapca,
-  "<br><strong>Pastor:</strong> ", lotes$pastor
+popup_lotes_sni <- paste0(
+  "<strong>Nombre Lote:</strong> ", lotes_sni$lote_name,
+  "<br><strong>Zonas Rapca:</strong> ", lotes_sni$zon_rapca,
+  "<br><strong>Pastor:</strong> ", lotes_sni$pastor
 )
 
-```
-
-
-```{r rapca_ma}
+# RAPCA MA
 rapca_ma <- st_read("data/rapca/Rapca_MALAGA 2020 provisional.shp", 
                     quiet = TRUE) 
 rapca_ma <- st_transform(rapca_ma, crs = 4326)
@@ -147,26 +141,25 @@ popup_rapca_ma <- paste0(
   "<br><strong>Código Unidad:</strong> ", rapca_ma$ID_UNIDAD,
   "<br><strong>Longitud:</strong> ", paste0(round(rapca_ma$LONGITUD,0), " m"),
   "<br><strong>Anchura:</strong> ", paste0(round(rapca_ma$ANCHURA,0), " m"),
-  "<br><strong>Superficie</strong> ", paste0(round(rapca_ma$LONGITUD,2), " ha"),
+  "<br><strong>Superficie</strong> ", paste0(round(rapca_ma$SUP_UNIDAD,2), " ha"),
   "<br><strong>Zona:</strong> ", paste0(rapca_ma$ZONA, " (", rapca_ma$ID_ZONA, ")")
 )
 
 ```
 
 
-
-```{r}
+```{r mapa-base-sni}
 # Set spatial extension 
 myext <- st_bbox(aoi_sni) %>% as.vector()
 
 map_base_sni <- map_base %>%
   fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
   addPolygons(
-    data = lotes,
+    data = lotes_sni,
     group = "Lotes",
     fillColor = "#1c9099", fillOpacity = 0.4,
     stroke = TRUE, color= "#1c9099", weight = 1,
-    popup = popup_lotes,
+    popup = popup_lotes_sni,
     label = ~pastor,
     labelOptions = labelOptions(
       noHide = FALSE,
@@ -206,19 +199,25 @@ map_base_sni %>%
 
 ### SNI-1 (Juan Francisco Rio Lopez) 
 
-```{r}
+```{r sni1}
 # Set spatial extension 
-lim <- lotes %>% filter(pastor == "Juan Francisco Rio Lopez")
+lim <- lotes_sni %>% filter(pastor == "Juan Francisco Rio Lopez")
 
 # Set spatial extension 
 myext <- st_bbox(lim) %>% as.vector()
+
+popup_lotes_lim <- paste0(
+  "<strong>Nombre Lote:</strong> ", lim$lote_name,
+  "<br><strong>Zonas Rapca:</strong> ", lim$zon_rapca,
+  "<br><strong>Pastor:</strong> ", lim$pastor
+)
 
 map_base_sni %>% 
   fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
   addPolygons(
     data = lim,
     group = "Lotes",
-    popup = popup_lotes,
+    popup = popup_lotes_lim,
     fillColor = "transparent",
     stroke = TRUE, color= "black", weight = 3)
   
@@ -226,18 +225,24 @@ map_base_sni %>%
 
 ### SNI-2 (Jose Manuel Gomez Mora)
 
-```{r}
-lim <- lotes %>% filter(pastor == "Jose Manuel Gomez Mora")
+```{r sni2}
+lim <- lotes_sni %>% filter(pastor == "Jose Manuel Gomez Mora")
 
 # Set spatial extension 
 myext <- st_bbox(lim) %>% as.vector()
+
+popup_lotes_lim <- paste0(
+  "<strong>Nombre Lote:</strong> ", lim$lote_name,
+  "<br><strong>Zonas Rapca:</strong> ", lim$zon_rapca,
+  "<br><strong>Pastor:</strong> ", lim$pastor
+)
 
 map_base_sni %>% 
   fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
   addPolygons(
     data = lim,
     group = "Lotes",
-    popup = popup_lotes,
+    popup = popup_lotes_lim,
     fillColor = "transparent",
     stroke = TRUE, color= "black", weight = 3)
   
@@ -247,17 +252,23 @@ map_base_sni %>%
 ### SNI-3 (Gema Florido Florido)
 
 ```{r}
-lim <- lotes %>% filter(pastor == "Gema Florido Florido")
+lim <- lotes_sni %>% filter(pastor == "Gema Florido Florido")
 
 # Set spatial extension 
 myext <- st_bbox(lim) %>% as.vector()
+
+popup_lotes_lim <- paste0(
+  "<strong>Nombre Lote:</strong> ", lim$lote_name,
+  "<br><strong>Zonas Rapca:</strong> ", lim$zon_rapca,
+  "<br><strong>Pastor:</strong> ", lim$pastor
+)
 
 map_base_sni %>% 
   fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
   addPolygons(
     data = lim,
     group = "Lotes",
-    popup = popup_lotes,
+    popup = popup_lotes_lim,
     fillColor = "transparent",
     stroke = TRUE, color= "black", weight = 3)
   
@@ -266,22 +277,224 @@ map_base_sni %>%
 
 ### SNI-4 (Pedro Vazquez Acevedo)
 
-```{r}
-lim <- lotes %>% filter(pastor == "Pedro Vazquez Acebedo")
+```{r sni4}
+lim <- lotes_sni %>% filter(pastor == "Pedro Vazquez Acebedo")
 
 # Set spatial extension 
 myext <- st_bbox(lim) %>% as.vector()
+
+popup_lotes_lim <- paste0(
+  "<strong>Nombre Lote:</strong> ", lim$lote_name,
+  "<br><strong>Zonas Rapca:</strong> ", lim$zon_rapca,
+  "<br><strong>Pastor:</strong> ", lim$pastor
+)
 
 map_base_sni %>% 
   fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
   addPolygons(
     data = lim,
     group = "Lotes",
-    popup = popup_lotes,
+    popup = popup_lotes_lim,
     fillColor = "transparent",
     stroke = TRUE, color= "black", weight = 3)
   
 ```
+
+
+Sierra Nevada (SNE) 
+=============================================================================
+
+Column {.tabset}
+--------------------------------------------------------------------
+
+### General View
+
+```{r prepare-data-sne}
+# Area of Interest 
+aoi_sne <- st_read("data/aoi/aoi_sne.shp", quiet = TRUE) 
+aoi_sne <- st_transform(aoi_sne, crs = 4326)
+
+# Lotes
+lotes_sne <- st_read("data/lotes/lotes_sne.shp", quiet = TRUE)
+lotes_sne <- st_transform(lotes_sne, crs = 4326)
+
+popup_lotes_sne <- paste0(
+  "<strong>Nombre Lote:</strong> ", lotes_sne$lote_name,
+  "<br><strong>Zonas Rapca:</strong> ", lotes_sne$zon_rapca,
+  "<br><strong>Pastor:</strong> ", lotes_sne$pastor
+)
+
+# RAPCA
+rapca_gr <- st_read("data/rapca/Rapca_GRANADA 2020.shp", 
+                    quiet = TRUE) 
+rapca_gr <- st_transform(rapca_gr, crs = 4326)
+
+popup_rapca_gr <- paste0(
+  "<strong>Unidad:</strong> ", rapca_gr$UNIDAD,
+  "<br><strong>Código Unidad:</strong> ", rapca_gr$ID_UNIDAD,
+  "<br><strong>Longitud:</strong> ", paste0(round(rapca_gr$LONG_UNID,0), " m"),
+  "<br><strong>Anchura:</strong> ", paste0(round(rapca_gr$ANCHO_UNID,0), " m"),
+  "<br><strong>Superficie</strong> ", paste0(round(rapca_gr$SUPERFIC_1,2), " ha"),
+  "<br><strong>Zona:</strong> ", paste0(rapca_gr$ZONA, " (", rapca_gr$ID_ZONA, ")")
+)
+
+```
+
+```{r mapa-base-sne}
+# Set spatial extension 
+myext <- st_bbox(aoi_sne) %>% as.vector()
+
+map_base_sne <- map_base %>%
+  fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
+  addPolygons(
+    data = lotes_sne,
+    group = "Lotes",
+    fillColor = "#1c9099", fillOpacity = 0.4,
+    stroke = TRUE, color= "#1c9099", weight = 1,
+    popup = popup_lotes_sne,
+    label = ~pastor,
+    labelOptions = labelOptions(
+      noHide = FALSE,
+      offset = c(0, 0),
+      textOnly = F,
+      style = list("color" = "black")
+    )
+  ) %>% 
+  addPolygons(
+    data = rapca_gr,
+    group = "RAPCA",
+    fillColor = "blue", fillOpacity = 0.6,
+    stroke = TRUE, color= "blue", weight = 1,
+    popup = popup_rapca_gr,
+    label = ~ID_UNIDAD,
+    labelOptions = labelOptions(
+      noHide = FALSE,
+      offset = c(0, 0),
+      textOnly = F,
+      style = list("color" = "black")
+    )
+  ) %>%
+  addLayersControl(
+    position = "bottomright",
+    baseGroups = c("Basemap", "PNOA Máxima Actualidad", "Satellite", "Hillshade", "Topographical", "topo2013"),
+    overlayGroups = c("RAPCA", "Lotes", "Montes Públicos", "Comunidades Vegetales", "Fires (1975-)"), 
+    options = layersControlOptions(collapsed = TRUE)
+  ) 
+
+map_base_sne %>% 
+  hideGroup("Montes Públicos") %>% 
+  hideGroup("Comunidades Vegetales") %>% 
+  hideGroup("RAPCA") %>% 
+  hideGroup("Fires (1975-)")
+```
+
+
+### SNE-1 (Jose Rueda Espinosa) 
+
+```{r sne1}
+# Set spatial extension 
+lim <- lotes_sne %>% filter(pastor == "Jose Rueda Espinosa")
+
+# Set spatial extension 
+myext <- st_bbox(lim) %>% as.vector()
+
+popup_lotes_lim <- paste0(
+  "<strong>Nombre Lote:</strong> ", lim$lote_name,
+  "<br><strong>Zonas Rapca:</strong> ", lim$zon_rapca,
+  "<br><strong>Pastor:</strong> ", lim$pastor
+)
+
+map_base_sne %>% 
+  fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
+  addPolygons(
+    data = lim,
+    group = "Lotes",
+    popup = popup_lotes_lim,
+    fillColor = "transparent",
+    stroke = TRUE, color= "black", weight = 3)
+  
+```
+
+### SNE-2 (Baltasar Pozo Morales)
+
+```{r sne2}
+# Set spatial extension 
+lim <- lotes_sne %>% filter(pastor == "Baltasar Pozo Morales")
+
+popup_lotes_lim <- paste0(
+  "<strong>Nombre Lote:</strong> ", lim$lote_name,
+  "<br><strong>Zonas Rapca:</strong> ", lim$zon_rapca,
+  "<br><strong>Pastor:</strong> ", lim$pastor
+)
+
+# Set spatial extension 
+myext <- st_bbox(lim) %>% as.vector()
+
+map_base_sne %>% 
+  fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
+  addPolygons(
+    data = lim,
+    group = "Lotes",
+    popup = popup_lotes_lim,
+    fillColor = "transparent",
+    stroke = TRUE, color= "black", weight = 3)
+  
+```
+
+### SNE-3 (Antonio Yebra Cabrera) 
+
+```{r sne3}
+# Set spatial extension 
+lim <- lotes_sne %>% filter(pastor == "Antonio Yebra Cabrera")
+
+# Set spatial extension 
+myext <- st_bbox(lim) %>% as.vector()
+
+popup_lotes_lim <- paste0(
+  "<strong>Nombre Lote:</strong> ", lim$lote_name,
+  "<br><strong>Zonas Rapca:</strong> ", lim$zon_rapca,
+  "<br><strong>Pastor:</strong> ", lim$pastor
+)
+
+map_base_sne %>% 
+  fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
+  addPolygons(
+    data = lim,
+    group = "Lotes",
+    popup = popup_lotes_lim,
+    fillColor = "transparent",
+    stroke = TRUE, color= "black", weight = 3)
+  
+```
+
+### SNE-4 (Jose Quirantes Bellido) 
+
+```{r sne4}
+# Set spatial extension 
+lim <- lotes_sne %>% filter(pastor == "Jose Quirantes Bellido")
+
+# Set spatial extension 
+myext <- st_bbox(lim) %>% as.vector()
+
+popup_lotes_lim <- paste0(
+  "<strong>Nombre Lote:</strong> ", lim$lote_name,
+  "<br><strong>Zonas Rapca:</strong> ", lim$zon_rapca,
+  "<br><strong>Pastor:</strong> ", lim$pastor
+)
+
+map_base_sne %>% 
+  fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
+  addPolygons(
+    data = lim,
+    group = "Lotes",
+    popup = popup_lotes_lim,
+    fillColor = "transparent",
+    stroke = TRUE, color= "black", weight = 3)
+```
+
+
+
+
 
 
 
@@ -297,6 +510,8 @@ Las capas de información utilizadas son:
 - [Comunidades Vegetales de Andalucía 1:10000](https://laboratoriorediam.cica.es/geonetwork/srv/spa/catalog.search#/metadata/08bfb47f8052ebfd936c20c5509b85c3fc73a91b) (WMS)
 - [Histórico de fuego (1975-Actualidad)](https://laboratoriorediam.cica.es/geonetwork/srv/spa/catalog.search#/metadata/0b9aa872-ad3d-4e30-941a-40a9968be6b0): áreas recorridas por el fuego obtenidas mediante Teledetección (WMS)
 - [Red de Áreas Pasto-Cortafuegos de Andalucía](https://www.juntadeandalucia.es/medioambiente/portal/landing-page-%C3%ADndice/-/asset_publisher/zX2ouZa4r1Rf/content/red-de-c3-a1reas-pasto-cortafuegos-de-andaluc-c3-ada-rapca-/20151?categoryVal=)
+
+
 
 
 
