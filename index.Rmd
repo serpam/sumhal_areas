@@ -19,6 +19,7 @@ library("tidyverse")
 library("raster")
 library("sp")
 library("lubridate")
+library("leafgl") # add large files points
 ```
 
 
@@ -252,6 +253,23 @@ map_base_sni %>%
 ### SNI-3 (Gema Florido Florido)
 
 ```{r}
+# Include data GPS 
+gps_gema1 <- read_csv("/Users/ajpelu/Nextcloud/sumhal/DATA/geoinfo_ganado/gema/AO771.csv") %>% dplyr::select(id, time, lng, lat) %>% 
+  mutate(pastor = "Gemma")
+gps_gema2 <- read_csv("/Users/ajpelu/Nextcloud/sumhal/DATA/geoinfo_ganado/gema/AO772.csv") %>% dplyr::select(id, time, lng, lat) %>% 
+  mutate(pastor = "Gemma")
+
+gps_pedro1 <- read_csv("/Users/ajpelu/Nextcloud/sumhal/DATA/geoinfo_ganado/pedro/AJ688.csv") %>% dplyr::select(id, time, lng, lat) %>% mutate(pastor = "Pedro")
+gps_pedro2 <- read_csv("/Users/ajpelu/Nextcloud/sumhal/DATA/geoinfo_ganado/pedro/AJ689.csv") %>% dplyr::select(id, time, lng, lat) %>% 
+  mutate(pastor = "Pedro")
+
+g <- bind_rows(gps_gema1, gps_gema2, 
+               gps_pedro1, gps_pedro2) %>% 
+  st_as_sf(coords= c("lng", "lat"), crs = 4326)
+```
+
+
+```{r}
 lim <- lotes_sni %>% filter(pastor == "Gema Florido Florido")
 
 # Set spatial extension 
@@ -263,6 +281,8 @@ popup_lotes_lim <- paste0(
   "<br><strong>Pastor:</strong> ", lim$pastor
 )
 
+pal <- colorFactor(c("red","navy"), domain = c("Gemma", "Pedro"))
+
 map_base_sni %>% 
   fitBounds(myext[1], myext[2], myext[3], myext[4]) %>% 
   addPolygons(
@@ -270,8 +290,22 @@ map_base_sni %>%
     group = "Lotes",
     popup = popup_lotes_lim,
     fillColor = "transparent",
-    stroke = TRUE, color= "black", weight = 3)
-  
+    stroke = TRUE, color= "black", weight = 3) %>% 
+  addGlPoints(data = g, 
+              group = "GPS-data", 
+              popup = TRUE,
+              fillColor = ~pal(pastor)
+              ) %>% 
+  addLayersControl(
+    position = "bottomright",
+    baseGroups = c("Basemap", "PNOA Máxima Actualidad", "Satellite", "Hillshade", "Topographical", "topo2013"),
+    overlayGroups = c("GPS-data", 
+                      "RAPCA", "Lotes", "Montes Públicos", 
+                      "Comunidades Vegetales", "Fires (1975-)"), 
+    options = layersControlOptions(collapsed = TRUE)) %>% 
+  hideGroup("Montes Públicos") %>% 
+  hideGroup("Comunidades Vegetales") %>% 
+  hideGroup("Fires (1975-)") 
 ```
 
 
